@@ -55,16 +55,9 @@ final class MainVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.dismissKeyboard()
-        self.title = "Photos"
-        view.backgroundColor = .systemBackground
-        navigationItem.searchController = searchController
-        searchController.searchBar.delegate = self
-        view.addSubview(collectionView)
-        view.addSubview(activityIndicator)
-        collectionView.delegate = self
-        collectionView.dataSource = self
+        setupView()
         setupConstraints()
+        self.dismissKeyboard()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -76,6 +69,17 @@ final class MainVC: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         collectionView.frame = CGRect(x: 10, y: 0, width: view.frame.size.width-20, height: view.frame.size.height)
+    }
+
+    private func setupView() {
+        self.title = "Photos"
+        navigationItem.searchController = searchController
+        searchController.searchBar.delegate = self
+        view.addSubview(collectionView)
+        view.addSubview(activityIndicator)
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        view.backgroundColor = .systemBackground
     }
 
     private func setupConstraints() {
@@ -130,14 +134,13 @@ extension MainVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
         let photoVC = PhotoVC()
         photoVC.selectedImage = indexPath.row
         photoVC.images = images
-//        photoVC.sourceURL = imagesResults[indexPath.row].link
         pushView(viewController: photoVC)
     }
 
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width: CGFloat = collectionView.frame.width/2 - 4
+        let width: CGFloat = collectionView.frame.width/4 - 4
         return CGSize(width: width, height: width)
     }
 

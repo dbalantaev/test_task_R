@@ -45,8 +45,9 @@ final class NetworkService {
 
                 completion(imageFromCache)
                 return
+
             } else {
-                guard let url = URL(string: elem.thumbnail) else { return }
+                guard let url = URL(string: elem.original) else { return }
 
                 URLSession.shared.dataTask(with: url) { data, _, error in
 
