@@ -9,13 +9,19 @@ import UIKit
 
 final class MainVC: UIViewController {
 
-    var imagesResults: [ImagesResult] = []
+    var imagesResults: [Result] = []
 
     var images = [UIImage]()
 
     var networkService = NetworkService()
 
-    private var imageURL: [ImagesResult]? {
+    var currentPage = 1
+
+    var loadingView: LoadingReusableView?
+
+    var isLoading = false
+
+    private var imageURL: [Result]? {
         didSet {
             self.imagesResults = imageURL!
             self.networkService.loadImage(array: self.imagesResults) { [weak self] image in
@@ -36,13 +42,16 @@ final class MainVC: UIViewController {
 
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.minimumLineSpacing = 8
-        layout.minimumInteritemSpacing = 4
-        let collview = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collview.register(CollectionViewCell.self, forCellWithReuseIdentifier: "cell")
-        collview.translatesAutoresizingMaskIntoConstraints = false
-        collview.backgroundColor = .systemBackground
-        return collview
+        layout.minimumLineSpacing = 1
+        layout.minimumInteritemSpacing = 1
+
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.register(CollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+        cv.register(LoadingReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "spinner")
+
+        cv.translatesAutoresizingMaskIntoConstraints = false
+        cv.backgroundColor = .systemBackground
+        return cv
     }()
 
     private let activityIndicator: UIActivityIndicatorView = {
@@ -58,6 +67,7 @@ final class MainVC: UIViewController {
         setupView()
         setupConstraints()
         self.dismissKeyboard()
+        self.loadingView?.activityIndicator.isHidden = true
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -120,8 +130,7 @@ extension MainVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
         images.count
     }
 
-    func collectionView(_ collectionView: UICollectionView,
-                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell",
                                                             for: indexPath) as? CollectionViewCell
         else { return UICollectionViewCell() }
@@ -129,19 +138,73 @@ extension MainVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
         return cell
     }
 
-    func collectionView(_ collectionView: UICollectionView,
-                        didSelectItemAt indexPath: IndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let photoVC = PhotoVC()
         photoVC.selectedImage = indexPath.row
         photoVC.images = images
         pushView(viewController: photoVC)
     }
 
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width: CGFloat = collectionView.frame.width/4 - 4
         return CGSize(width: width, height: width)
+    }
+
+    // MARK: -  пагинация
+
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+
+        if indexPath.row == imagesResults.count - 50, !self.isLoading {
+            loadMoreData()
+        }
+    }
+
+    func loadMoreData() {
+        if !self.isLoading {
+            self.isLoading = true
+            DispatchQueue.global().asyncAfter(deadline: .now() + .seconds(3)) { // сделана зажержка в 3 секунды для демострации пагинации
+                self.currentPage += 1
+                self.networkService.fetchPhotos(currentPage: self.currentPage) { [weak self] jsonResult in
+                    self?.imageURL = jsonResult
+                }
+                DispatchQueue.main.async {
+                    self.collectionView.reloadData()
+                    self.isLoading = false
+                }
+            }
+        }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+        if self.isLoading {
+            return CGSize.zero
+        } else {
+            return CGSize(width: collectionView.bounds.size.width, height: 55)
+        }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        if kind == UICollectionView.elementKindSectionFooter {
+            let aFooterView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "spinner", for: indexPath) as! LoadingReusableView
+            loadingView = aFooterView
+            loadingView?.backgroundColor = UIColor.clear
+            return aFooterView
+        }
+        return UICollectionReusableView()
+    }
+
+    func collectionView(_ collectionView: UICollectionView, willDisplaySupplementaryView view: UICollectionReusableView, forElementKind elementKind: String, at indexPath: IndexPath) {
+        if elementKind == UICollectionView.elementKindSectionFooter {
+            self.loadingView?.activityIndicator.startAnimating()
+//            self.loadingView?.isHidden = false
+        }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didEndDisplayingSupplementaryView view: UICollectionReusableView, forElementOfKind elementKind: String, at indexPath: IndexPath) {
+        if elementKind == UICollectionView.elementKindSectionFooter {
+            self.loadingView?.activityIndicator.stopAnimating()
+//            self.loadingView?.isHidden = true
+        }
     }
 
 }
@@ -155,11 +218,13 @@ extension MainVC: UISearchBarDelegate {
         if let text = searchBar.text?.replacingOccurrences(of: " ", with: "%20") {
             imagesResults = []
             images = []
-            networkService.fetchPhotos(query: text) { [weak self] jsonResult in
+            networkService.query = text
+            networkService.fetchPhotos(currentPage: currentPage) { [weak self] jsonResult in
                 self?.imageURL = jsonResult
             }
             didRecieveSearchResult()
             showLoadingProcess()
+            self.loadingView?.activityIndicator.isHidden = false
         }
     }
 

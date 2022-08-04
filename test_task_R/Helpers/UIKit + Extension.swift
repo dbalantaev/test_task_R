@@ -9,7 +9,7 @@ import UIKit
 
 extension UIViewController {
 
-    // скрытие клавиатуры по нажатю на любое место и открытие/закрытие экранов
+    // скрытие клавиатуры по нажатю на любое место
     func dismissKeyboard() {
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self,
                                                                  action:

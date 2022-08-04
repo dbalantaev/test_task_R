@@ -17,6 +17,7 @@
 		DE2EE4DC2891780800111E0A /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE2EE4DB2891780800111E0A /* NetworkService.swift */; };
 		DE2EE4DE2891788B00111E0A /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE2EE4DD2891788B00111E0A /* CollectionViewCell.swift */; };
 		DE2EE4E0289178DF00111E0A /* PhotoVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE2EE4DF289178DF00111E0A /* PhotoVC.swift */; };
+		DEA75A97289BE6E100553EF7 /* LoadingReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA75A96289BE6E100553EF7 /* LoadingReusableView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		DE2EE4DB2891780800111E0A /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		DE2EE4DD2891788B00111E0A /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		DE2EE4DF289178DF00111E0A /* PhotoVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoVC.swift; sourceTree = "<group>"; };
+		DEA75A96289BE6E100553EF7 /* LoadingReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingReusableView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +116,7 @@
 				DE2EE4C82891768500111E0A /* LaunchScreen.storyboard */,
 				DE2EE4C62891768500111E0A /* Assets.xcassets */,
 				DE2EE4DD2891788B00111E0A /* CollectionViewCell.swift */,
+				DEA75A96289BE6E100553EF7 /* LoadingReusableView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -199,6 +202,7 @@
 			files = (
 				DE2EE4C22891767F00111E0A /* MainVC.swift in Sources */,
 				DE2EE4BE2891767F00111E0A /* AppDelegate.swift in Sources */,
+				DEA75A97289BE6E100553EF7 /* LoadingReusableView.swift in Sources */,
 				DE2EE4C02891767F00111E0A /* SceneDelegate.swift in Sources */,
 				DE2EE4E0289178DF00111E0A /* PhotoVC.swift in Sources */,
 				DE2EE4DE2891788B00111E0A /* CollectionViewCell.swift in Sources */,

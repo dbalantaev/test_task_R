@@ -9,45 +9,51 @@ import UIKit
 
 final class NetworkService {
 
+    var query = ""
+    
     var imageCache = NSCache<AnyObject, AnyObject>()
-
-    func fetchPhotos(query: String, completion: @escaping ([ImagesResult]) -> Void) {
-
-        let apiKey = "20886cf384c56470133e96619b70e1e2e01d1cb11e929d7ee1069defe1e43438"
-        let numberOfPages = 3
-        let urlStrings = Array(0..<numberOfPages).map {
-            "https://serpapi.com/search.json?q=\(query)&tbm=isch&ijn=\($0)&api_key=\(apiKey)"
+    
+    func fetchPhotos (currentPage: Int, completion: @escaping ([Result]) -> Void) {
+        
+        let accessKey = "XnKgGf6IhVBH735VIfV8grSaOwyWn9EAZWWW0Hi8PGc"
+        let baseURL = "https://api.unsplash.com/search/photos"
+        let count = 60
+        let urlString = "\(baseURL)?client_id=\(accessKey)&page=\(currentPage)&per_page=\(count)&query=\(query)"
+        
+        guard let url = URL(string: urlString) else {
+            return
         }
-        urlStrings.compactMap { URL(string: $0) }.forEach { url in
-
-            URLSession.shared.dataTask(with: url) { data, _, error in
-
-                guard let data = data,
-                      error == nil else { return }
-                do {
-                    let jsonResult = try JSONDecoder().decode(ImagesModel.self, from: data)
-
-                    DispatchQueue.main.async {
-                        completion(jsonResult.imagesResults)
-                    }
-                } catch {
-                    print(error)
+        let task = URLSession.shared.dataTask(with: url) { (data, _, error) in
+            guard let data = data, error == nil else {
+                return
+            }
+            
+            do {
+                let jsonResponse = try JSONDecoder().decode(APIResponse.self, from: data)
+                print(jsonResponse.results.count)
+                DispatchQueue.main.async {
+                    completion(jsonResponse.results)
                 }
-            }.resume()
+            } catch {
+                print(error)
+            }
+
         }
+        task.resume()
     }
 
-    func loadImage(array: [ImagesResult], completion: @escaping (UIImage?) -> Void) {
+
+    func loadImage(array: [Result], completion: @escaping (UIImage?) -> Void) {
 
         for elem in array {
 
-            if let imageFromCache = imageCache.object(forKey: elem.thumbnail as AnyObject) as? UIImage {
+            if let imageFromCache = imageCache.object(forKey: elem.urls.regular as AnyObject) as? UIImage {
 
                 completion(imageFromCache)
                 return
 
             } else {
-                guard let url = URL(string: elem.original) else { return }
+                guard let url = URL(string: elem.urls.regular) else { return }
 
                 URLSession.shared.dataTask(with: url) { data, _, error in
 
@@ -55,7 +61,7 @@ final class NetworkService {
 
                     guard let image = UIImage(data: data) else { return }
 
-                    self.imageCache.setObject(image, forKey: elem.thumbnail as AnyObject )
+                    self.imageCache.setObject(image, forKey: elem.urls.regular as AnyObject )
 
                     DispatchQueue.main.async {
                         completion(image)
