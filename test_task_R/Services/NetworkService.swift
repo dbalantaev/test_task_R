@@ -17,7 +17,7 @@ final class NetworkService {
         
         let accessKey = "XnKgGf6IhVBH735VIfV8grSaOwyWn9EAZWWW0Hi8PGc"
         let baseURL = "https://api.unsplash.com/search/photos"
-        let count = 60
+        let count = 20
         let urlString = "\(baseURL)?client_id=\(accessKey)&page=\(currentPage)&per_page=\(count)&query=\(query)"
         
         guard let url = URL(string: urlString) else {

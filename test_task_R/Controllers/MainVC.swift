@@ -15,9 +15,9 @@ final class MainVC: UIViewController {
 
     var networkService = NetworkService()
 
-    var currentPage = 1
-
     var loadingView: LoadingReusableView?
+
+    var currentPage = 1
 
     var isLoading = false
 
@@ -67,7 +67,7 @@ final class MainVC: UIViewController {
         setupView()
         setupConstraints()
         self.dismissKeyboard()
-        self.loadingView?.activityIndicator.isHidden = true
+        collectionView.isHidden = true
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -154,7 +154,7 @@ extension MainVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
 
-        if indexPath.row == imagesResults.count - 50, !self.isLoading {
+        if indexPath.row == imagesResults.count - 20, !self.isLoading {
             loadMoreData()
         }
     }
@@ -196,14 +196,14 @@ extension MainVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
     func collectionView(_ collectionView: UICollectionView, willDisplaySupplementaryView view: UICollectionReusableView, forElementKind elementKind: String, at indexPath: IndexPath) {
         if elementKind == UICollectionView.elementKindSectionFooter {
             self.loadingView?.activityIndicator.startAnimating()
-//            self.loadingView?.isHidden = false
+            self.loadingView?.activityIndicator.hidesWhenStopped = false
         }
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplayingSupplementaryView view: UICollectionReusableView, forElementOfKind elementKind: String, at indexPath: IndexPath) {
         if elementKind == UICollectionView.elementKindSectionFooter {
             self.loadingView?.activityIndicator.stopAnimating()
-//            self.loadingView?.isHidden = true
+            self.loadingView?.activityIndicator.hidesWhenStopped = true
         }
     }
 
@@ -224,7 +224,7 @@ extension MainVC: UISearchBarDelegate {
             }
             didRecieveSearchResult()
             showLoadingProcess()
-            self.loadingView?.activityIndicator.isHidden = false
+            self.loadingView?.isHidden = false
         }
     }
 

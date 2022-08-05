@@ -121,8 +121,6 @@ extension PhotoVC: UIScrollViewDelegate, UIGestureRecognizerDelegate {
         scrollView.addGestureRecognizer(leftSwipe)
     }
 
-    // MARK: - можно переписать по компактнее
-
     @objc func handleSingleTapOnScrollView (recognizer: UITapGestureRecognizer) {
         if closeBtn.isHidden {
             closeBtn.isHidden = false
@@ -182,8 +180,6 @@ extension PhotoVC: UIScrollViewDelegate, UIGestureRecognizerDelegate {
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return imageView
     }
-
-// MARK: - переписать этот ужас через guard
 
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
         if scrollView.zoomScale > 1 {
