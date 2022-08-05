@@ -162,13 +162,15 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
     func loadMoreData() {
         if !self.isLoading {
             self.isLoading = true
-            self.currentPage += 1
-            self.networkService.fetchPhotos(currentPage: self.currentPage) { [weak self] jsonResult in
-                self?.imageURL = jsonResult
-            }
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
-                self.isLoading = false
+            DispatchQueue.global().asyncAfter(deadline: .now() + .seconds(2)) { // сделана зажержка в 2 секунды для демострации пагинации
+                self.currentPage += 1
+                self.networkService.fetchPhotos(currentPage: self.currentPage) { [weak self] jsonResult in
+                    self?.imageURL = jsonResult
+                }
+                DispatchQueue.main.async {
+                    self.collectionView.reloadData()
+                    self.isLoading = false
+                }
             }
         }
     }
