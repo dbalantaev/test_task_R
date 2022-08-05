@@ -1,5 +1,5 @@
 //
-//  MainVC.swift
+//  MainViewController.swift
 //  test_task_R
 //
 //  Created by Дмитрий Балантаев on 27.07.2022.
@@ -7,9 +7,9 @@
 
 import UIKit
 
-final class MainVC: UIViewController {
+final class MainViewController: UIViewController {
 
-    var imagesResults: [Result] = []
+    var results: [Result] = []
 
     var images = [UIImage]()
 
@@ -23,8 +23,8 @@ final class MainVC: UIViewController {
 
     private var imageURL: [Result]? {
         didSet {
-            self.imagesResults = imageURL!
-            self.networkService.loadImage(array: self.imagesResults) { [weak self] image in
+            self.results = imageURL!
+            self.networkService.loadImage(array: self.results) { [weak self] image in
                 self?.image = image
             }
         }
@@ -124,7 +124,7 @@ final class MainVC: UIViewController {
 
 // MARK: - extension для Collection View
 
-extension MainVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         images.count
@@ -139,7 +139,7 @@ extension MainVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let photoVC = PhotoVC()
+        let photoVC = PhotoViewController()
         photoVC.selectedImage = indexPath.row
         photoVC.images = images
         pushView(viewController: photoVC)
@@ -154,7 +154,7 @@ extension MainVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
 
-        if indexPath.row == imagesResults.count - 20, !self.isLoading {
+        if indexPath.row == results.count - 20, !self.isLoading {
             loadMoreData()
         }
     }
@@ -162,15 +162,13 @@ extension MainVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
     func loadMoreData() {
         if !self.isLoading {
             self.isLoading = true
-            DispatchQueue.global().asyncAfter(deadline: .now() + .seconds(3)) { // сделана зажержка в 3 секунды для демострации пагинации
-                self.currentPage += 1
-                self.networkService.fetchPhotos(currentPage: self.currentPage) { [weak self] jsonResult in
-                    self?.imageURL = jsonResult
-                }
-                DispatchQueue.main.async {
-                    self.collectionView.reloadData()
-                    self.isLoading = false
-                }
+            self.currentPage += 1
+            self.networkService.fetchPhotos(currentPage: self.currentPage) { [weak self] jsonResult in
+                self?.imageURL = jsonResult
+            }
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+                self.isLoading = false
             }
         }
     }
@@ -209,14 +207,14 @@ extension MainVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
 
 }
 
-// MARK: - extension для SearchBar
+// MARK: - UISearchBarDelegate
 
-extension MainVC: UISearchBarDelegate {
+extension MainViewController: UISearchBarDelegate {
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
         if let text = searchBar.text?.replacingOccurrences(of: " ", with: "%20") {
-            imagesResults = []
+            results = []
             images = []
             networkService.query = text
             networkService.fetchPhotos(currentPage: currentPage) { [weak self] jsonResult in

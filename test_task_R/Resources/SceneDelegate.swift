@@ -19,7 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         // загрузка ViewController вместо Main Storyboard
         window = UIWindow(windowScene: windowScene)
-        let viewController = UINavigationController(rootViewController: MainVC())
+        let viewController = UINavigationController(rootViewController: MainViewController())
         window?.backgroundColor = .white
         window?.rootViewController = viewController
         window?.makeKeyAndVisible()

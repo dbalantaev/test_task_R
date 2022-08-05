@@ -1,5 +1,5 @@
 //
-//  PhotoVC.swift
+//  PhotoViewController.swift
 //  test_task_R
 //
 //  Created by Дмитрий Балантаев on 27.07.2022.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class PhotoVC: UIViewController {
+final class PhotoViewController: UIViewController {
 
     var images = [UIImage]()
 
@@ -95,7 +95,7 @@ final class PhotoVC: UIViewController {
 }
 
 // MARK: - скроллинг и увеличение двойным нажатием
-extension PhotoVC: UIScrollViewDelegate, UIGestureRecognizerDelegate {
+extension PhotoViewController: UIScrollViewDelegate, UIGestureRecognizerDelegate {
 
     func setupGesture() {
         let singleTapGesture = UITapGestureRecognizer(target: self,

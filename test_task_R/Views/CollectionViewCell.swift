@@ -9,7 +9,7 @@ import UIKit
 
 final class CollectionViewCell: UICollectionViewCell {
 
-    let imageView: UIImageView! = {
+    let imageView: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
         image.contentMode = .scaleAspectFill
@@ -25,10 +25,14 @@ final class CollectionViewCell: UICollectionViewCell {
     }
 
     private func setupConstraints() {
-        imageView.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
-        imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
-        imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
-        imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
+        NSLayoutConstraint.activate(
+            [
+                imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
+                imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+                imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+                imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+            ]
+        )
     }
 
     required init?(coder: NSCoder) {
