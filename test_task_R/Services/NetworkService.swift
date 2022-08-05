@@ -15,7 +15,7 @@ final class NetworkService {
     
     func fetchPhotos (currentPage: Int, completion: @escaping ([Result]) -> Void) {
         
-        let accessKey = "XnKgGf6IhVBH735VIfV8grSaOwyWn9EAZWWW0Hi8PGc"
+        let accessKey = "your_key"
         let baseURL = "https://api.unsplash.com/search/photos"
         let count = 20
         let urlString = "\(baseURL)?client_id=\(accessKey)&page=\(currentPage)&per_page=\(count)&query=\(query)"
