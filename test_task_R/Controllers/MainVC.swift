@@ -224,7 +224,6 @@ extension MainVC: UISearchBarDelegate {
             }
             didRecieveSearchResult()
             showLoadingProcess()
-            self.loadingView?.isHidden = false
         }
     }
 

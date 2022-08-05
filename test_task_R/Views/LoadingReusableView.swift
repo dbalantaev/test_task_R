@@ -7,7 +7,7 @@
 
 import UIKit
 
-class LoadingReusableView: UICollectionReusableView {
+final class LoadingReusableView: UICollectionReusableView {
 
     let identifier = "spinner"
 
